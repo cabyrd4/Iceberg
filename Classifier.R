@@ -24,10 +24,10 @@ str(test)
 summary(test)
 
 # Data Manipulation
-train$male = train %>%
-  mutate(male = ifelse(Sex == "female",0,1))
+train$Male = ifelse(train$Sex == 'male', 1, 0)
 
-train.nontext = select(train, Survived, PassengerId, Pclass, Age)
+# Train dataset w/o text
+train.nontext = select(train, Survived, PassengerId, Pclass, Male, Age:Parch, Fare)
 
 # Feature Selection
 correlationMatrix <- cor(train.nontext[,])
