@@ -4,36 +4,34 @@ library(rpart)
 library(mlbench)
 library(caret)
 library(dplyr)
+library(e1071)
 
 # Import Files
 train = read.csv("train.csv")
 test = read.csv("test.csv")
 
 # Understand Data
-class(train)
+sapply(train, class)
 dim(train)
 names(train)
 str(train)
 summary(train)
 glimpse(train)
 
-class(test)
-dim(test)
-names(test)
-str(test)
-summary(test)
 
 # Data Manipulation
-train$Male = ifelse(train$Sex == 'male', 1, 0)
+dataset = train %>%
+  select(-PassengerId, -Name, -Ticket)
 
-# Train dataset w/o text
-train.nontext = select(train, Survived, PassengerId, Pclass, Male, Age:Parch, Fare)
+glimpse(dataset)
+dim(dataset)
 
-# Feature Selection
-correlationMatrix <- cor(train.nontext[,])
-print(correlationMatrix)
-highlyCorrelated <- findCorrelation(correlationMatrix, cutoff=0.5)
-print(highlyCorrelated)
+control <- rfeControl(functions=rfFuncs, method="cv", number=10)
+results <- rfe(dataset[,2:9], dataset[,1], sizes=c(1:8), rfeControl=control)
+# summarize the results
+print(results)
+# list the chosen features
+predictors(results)
+# plot the results
+plot(results, type=c("g", "o"))
 
-# Decision Tree
-tree = rpart(Survived ~ ., train, method = "class")
