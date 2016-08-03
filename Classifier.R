@@ -22,6 +22,10 @@ summary(train)
 glimpse(train)
 head(train)
 
+# Combine data
+test$Survived = 2
+tandt = rbind(train, test)
+
 # Grab Features
 grabFeatures <- function(data) {
   features <- c("Pclass",
@@ -71,9 +75,11 @@ grabFeatures <- function(data) {
 
 head(grabFeatures(test))
 glimpse(grabFeatures(test))
-glimpse(grabFeatures(train))
+glimpse(grabFeatures(tandt))
 
-summary(grabFeatures(test))
+summary(grabFeatures(tandt))
+
+grabFeatures(tandt) %>% filter(title == "None")
 
 # Random Forest
 rf <- randomForest(grabFeatures(train), as.factor(train$Survived), ntree=100, importance=TRUE)
