@@ -67,7 +67,7 @@ grabFeatures <- function(data) {
                 ifelse(str_detect(data$Cabin, "G") == TRUE, "G","")))))))
   data$deck <- as.factor(data$deck)
   fea <- data[,features]
-  fea$Age[is.na(fea$Age)] <- -1
+  fea$Age[is.na(fea$Age)] <- median(fea$Age, na.rm=TRUE)
   fea$Fare[is.na(fea$Fare)] <- median(fea$Fare, na.rm=TRUE)
   fea$Embarked[fea$Embarked==""] = "S"
   fea$Sex      <- as.factor(fea$Sex)
@@ -78,18 +78,28 @@ grabFeatures <- function(data) {
 
 head(grabFeatures(tandt))
 glimpse(grabFeatures(tandt))
+glimpse(grabFeatures(test))
+glimpse(grabFeatures(train))
 
 summary(grabFeatures(tandt))
 summary(grabFeatures(test))
 summary(grabFeatures(train))
 
-grabFeatures(tandt) %>% filter(deck == "")
+tandt2 <- grabFeatures(tandt)
+train2 <- slice(tandt2, 1:891)
+test2 <- slice(tandt2, 892:1309)
+
+head(train2)
+head(test2)
+
+table(train2$Pclass)
+table(test2$Pclass)
 
 # Random Forest
-rf <- randomForest(grabFeatures(train), as.factor(train$Survived), ntree=100, importance=TRUE)
+rf <- randomForest(train2, as.factor(train$Survived), ntree=100, importance=TRUE)
 
 submission <- data.frame(PassengerId = test$PassengerId)
-submission$Survived <- predict(rf, grabFeatures(test))
+submission$Survived <- predict(rf, test2)
 write.csv(submission, file = "1_random_forest_r_submission.csv", row.names=FALSE)
 
 imp <- importance(rf, type=1)
