@@ -13,18 +13,21 @@ library(ggplot2)
 train = read.csv("train.csv", stringsAsFactors=FALSE)
 test = read.csv("test.csv", stringsAsFactors=FALSE)
 
-# Understand Data
-sapply(train, class)
-dim(train)
-names(train)
-str(train)
-summary(train)
-glimpse(train)
-head(train)
-
 # Combine data
-test$Survived = 2
+test$Survived <- 2
+test$Survived <- as.integer(test$Survived)
 tandt = rbind(train, test)
+
+# Understand Data
+sapply(tandt, class)
+sapply(train, class)
+
+dim(tandt)
+names(tandt)
+str(tandt)
+summary(tandt)
+glimpse(tandt)
+head(tandt)
 
 # Grab Features
 grabFeatures <- function(data) {
@@ -73,13 +76,14 @@ grabFeatures <- function(data) {
   return(fea)
 }
 
-head(grabFeatures(test))
-glimpse(grabFeatures(test))
+head(grabFeatures(tandt))
 glimpse(grabFeatures(tandt))
 
 summary(grabFeatures(tandt))
+summary(grabFeatures(test))
+summary(grabFeatures(train))
 
-grabFeatures(tandt) %>% filter(title == "None")
+grabFeatures(tandt) %>% filter(deck == "")
 
 # Random Forest
 rf <- randomForest(grabFeatures(train), as.factor(train$Survived), ntree=100, importance=TRUE)
